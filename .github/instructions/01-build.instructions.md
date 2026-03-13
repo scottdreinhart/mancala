@@ -68,7 +68,23 @@ Always run `pnpm validate` before pushing changes.
 
 ---
 
+## WSL / NTFS Platform Switching
+
+Native binaries in `node_modules/` are platform-specific. A `.node-platform.md` tracking file
+in the project root records `platform: linux` or `platform: windows`.
+
+| Step | Bash → Linux | PowerShell → Windows |
+|---|---|---|
+| 1 | `rm -rf node_modules` | Delete `node_modules` |
+| 2 | `pnpm install` (retry if EACCES) | `pnpm install` |
+| 3 | `pnpm rebuild` (creates `.bin/`) | — |
+| 4 | Update `.node-platform.md` → `linux` | Update `.node-platform.md` → `windows` |
+| 5 | `pnpm check` | `pnpm check` |
+
+**Always check `.node-platform.md` before running any command.** See `AGENTS.md` §10.
+
+---
+
 ## Language Guardrails
 
 Build scripts use **JavaScript** (Node) in `scripts/`. Do not introduce side-language build helpers.
-Prefer existing `package.json` scripts over raw CLI commands.

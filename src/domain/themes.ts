@@ -4,13 +4,14 @@
  */
 
 export const COLOR_THEMES = [
-  'classic',
-  'ocean',
-  'sunset',
-  'forest',
-  'rose',
-  'midnight',
-  'highcontrast',
+  'chiba-city',
+  'neon-core',
+  'neon-arcade',
+  'night-district',
+  'gridline',
+  'vaporwave',
+  'synthwave',
+  'high-contrast',
 ] as const
 export type ColorTheme = (typeof COLOR_THEMES)[number]
 
@@ -27,7 +28,7 @@ export const COLORBLIND_MODES = [
 export type ColorblindMode = (typeof COLORBLIND_MODES)[number]
 
 export const DEFAULT_SETTINGS = {
-  colorTheme: 'highcontrast' as ColorTheme,
+  colorTheme: 'chiba-city' as ColorTheme,
   mode: 'system' as Mode,
   colorblind: 'none' as ColorblindMode,
 }

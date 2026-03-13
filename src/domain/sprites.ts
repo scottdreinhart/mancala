@@ -22,45 +22,45 @@ export interface ThemeSpriteSet {
 
 /** Central sprite registry — maps theme ID → sprite set */
 const SPRITE_REGISTRY: Readonly<Record<string, ThemeSpriteSet>> = {
-  classic: {
+  'neon-core': {
     background: {
-      id: 'classic-bg',
+      id: 'neon-core-bg',
       src: '/backgrounds/matrix.png',
       alt: 'Matrix digital rain pattern',
     },
   },
-  ocean: {
+  'neon-arcade': {
     background: {
-      id: 'ocean-bg',
+      id: 'neon-arcade-bg',
       src: '/backgrounds/cityscape.png',
       alt: 'Cityscape skyline',
     },
   },
-  sunset: {
+  'night-district': {
     background: null,
   },
-  forest: {
+  gridline: {
     background: {
-      id: 'forest-bg',
+      id: 'gridline-bg',
       src: '/backgrounds/matrix.png',
       alt: 'Matrix digital rain pattern',
     },
   },
-  rose: {
+  vaporwave: {
     background: {
-      id: 'rose-bg',
+      id: 'vaporwave-bg',
       src: '/backgrounds/laser.png',
       alt: 'Laser grid pattern',
     },
   },
-  midnight: {
+  synthwave: {
     background: {
-      id: 'midnight-bg',
+      id: 'synthwave-bg',
       src: '/backgrounds/circuit.png',
       alt: 'Circuit board traces',
     },
   },
-  highcontrast: {
+  'high-contrast': {
     background: null,
   },
 }

@@ -23,10 +23,11 @@
 | Layer | Path | May Import | Must Not Import |
 |---|---|---|---|
 | **Domain** | `src/domain/` | `domain/` only | `app/`, `ui/`, React |
-| **App** | `src/app/` | `domain/`, `app/` | `ui/` |
+| **App** | `src/app/` | `domain/`, `app/`, `wasm/` | `ui/` |
 | **UI** | `src/ui/` | `domain/`, `app/`, `ui/` | — |
-| **Workers** | `src/workers/` | `domain/` only | `app/`, `ui/`, React |
-| **Themes** | `src/themes/` | nothing (pure CSS) | everything |
+| **Workers** | `src/workers/` | `domain/`, `wasm/` | everything else |
+| **WASM** | `src/wasm/` | `wasm/` only | everything |
+| **Themes** | `src/themes/` | nothing | everything |
 
 Boundaries enforced by `eslint-plugin-boundaries`.
 

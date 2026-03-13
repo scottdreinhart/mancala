@@ -1,3 +1,13 @@
+/* ─── Theme imports ──────────────────────────────────────── */
+@import './themes/chiba-city.css';
+@import './themes/neon-core.css';
+@import './themes/neon-arcade.css';
+@import './themes/night-district.css';
+@import './themes/gridline.css';
+@import './themes/vaporwave.css';
+@import './themes/synthwave.css';
+@import './themes/high-contrast.css';
+
 *,
 *::before,
 *::after {
@@ -10,22 +20,17 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background: #1a1a2e;
   color: #e0e0e0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+}
+
+#root {
+  width: 100%;
   min-height: 100vh;
 }
 
-.app {
-  text-align: center;
-  padding: 2rem;
+button {
+  font-family: inherit;
 }
 
-h1 {
-  font-size: 2rem;
-  margin-bottom: 1rem;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+select {
+  font-family: inherit;
 }

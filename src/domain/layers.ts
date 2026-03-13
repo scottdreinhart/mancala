@@ -47,13 +47,13 @@ const DEFAULT_LAYER_STACK: LayerStack = {
  * Only specify layers that differ from the default stack.
  */
 const THEME_LAYER_OVERRIDES: Readonly<Record<string, Partial<LayerStack>>> = {
-  highcontrast: {
+  'high-contrast': {
     boardImage: { opacity: 0, blendMode: 'normal', visible: false },
   },
-  sunset: {
+  'night-district': {
     boardImage: { opacity: 0, blendMode: 'normal', visible: false },
   },
-  midnight: {
+  synthwave: {
     boardImage: { opacity: 0.85, blendMode: 'multiply', visible: true },
   },
 }

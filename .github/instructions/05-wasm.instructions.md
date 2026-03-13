@@ -16,7 +16,7 @@ AssemblyScript compiles to WebAssembly, embedded as base64 and loaded at runtime
 | Path | Purpose |
 |---|---|
 | `assembly/index.ts` | AssemblyScript source |
-| `assembly/tsconfig.json` | AS compiler config |
+| `assembly/tsconfig.json` | AS compiler config (inlined — does not use `extends`) |
 | `scripts/build-wasm.js` | Build script: AS → WASM → base64 → `src/wasm/ai-wasm.ts` |
 | `src/wasm/ai-wasm.ts` | Auto-generated base64 WASM module (do not edit) |
 | `src/workers/ai.worker.ts` | Web Worker — WASM-first with JS fallback |

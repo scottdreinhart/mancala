@@ -347,6 +347,70 @@ All games in this portfolio share the same React + Vite + TypeScript + CLEAN arc
 | **[Chō-han](https://github.com/scottdreinhart/cho-han)** | A traditional Japanese game where players bet on whether the sum of two hidden dice is even (Chō) or odd (Han) | Simpler — binary bet + reveal animation |
 | **[Chicago](https://github.com/scottdreinhart/chicago)** | An 11-round game where players score by rolling a sum that matches the specific target number for that round | Similar — round-target scoring system |
 
+---
+
+## Mancala Family: Game Variations
+
+This project implements **Kalah** — the modern, commercialized variant of Mancala. However, the Mancala family includes dozens of regional variations with **significantly different rules and strategic depth**. These differences suggest implementing other variants as **separate repositories** within the game portfolio.
+
+### Variation Comparison
+
+| Variant | Region | Board | Stones | Capture Rule | Strategic Depth | Status |
+|---------|--------|-------|--------|--------------|-----------------|--------|
+| **Kalah** (Current) | USA/UK | 2×6 + stores | 4-6 | Simple empty-pit capture | Medium | SOLVED (1st player wins) |
+| **Oware/Awale** | Ghana / West Africa | 2×6 (no stores) | 4 | Landing in opponent pit with 2-3 seeds | **HIGH** | SOLVED (draw with perfect play) |
+| **Bao la kiswahili** | East Africa / Zanzibar | 4×8 | 32 | Relay sowing + multi-capture sequences | **VERY HIGH** (Expert) | Partially analyzed |
+| **Congkak** | Indonesia / Malaysia | 2×7 + stores | 7 | Similar to Kalah with larger setup | Medium | Variant of Kalah-like rules |
+| **Pallanguzhi** | Tamil Nadu, India | 2×7 + stores | 6 | Kalah-like capture rules | Medium | Regional variant |
+| **Sungka** | Philippines | Similar structure | Variable | Kalah-style rules | Medium | Modern Pacific variant |
+
+### Recommended Future Repositories
+
+Based on rule complexity and market appeal, recommend these as **separate game projects**:
+
+#### 🔹 **[Oware / Awale](https://github.com/scottdreinhart/oware)** (HIGH PRIORITY)
+- **Status**: Next logical progression after Kalah
+- **Unique mechanics**: 
+  - Capture rule: landing in opponent's pit with exactly 2-3 seeds
+  - Grand Slam variants: preventing capture of all opponent's seeds
+  - More tactical than Kalah; appeals to strategy enthusiasts
+- **Reusable architecture**: Same CLEAN + Atomic Design stack as Mancala
+- **Difficulty**: Medium-High AI (already solved; strong strategy patterns known)
+- **Regional names**: Ayo, Awale, Awari, Warri, Awalé (West African / Caribbean)
+
+#### 🔹 **[Bao](https://github.com/scottdreinhart/bao)** (PREMIUM / ADVANCED)
+- **Status**: Expert-level complexity; professional tournament play exists
+- **Unique mechanics**:
+  - 4×8 board (32 stones per player) — much larger than Kalah
+  - Two-phase gameplay: Namua (hand seeds) + Mtaji (board seeds)
+  - Relay sowing with consecutive multi-captures
+  - Directional choices (clockwise vs. counterclockwise)
+  - Special "nyumba" (house) rules
+- **Reusable architecture**: Slight expansion of domain rules layer
+- **Difficulty**: Very High AI (challenge: partial solutions exist; heuristic-based strategies required)
+- **Regional names**: Bao la kiswahili (Swahili), Omweso (Uganda), Bawo (Malawi)
+- **Marketing angle**: "For experienced Mancala players" / "Premium strategy game"
+
+#### 🔹 **[Pallanguzhi](https://github.com/scottdreinhart/pallanguzhi)** (OPTIONAL / QUICK WIN)
+- **Status**: Kalah-like mechanics with 2×7 board and 6 stones; minimal rule differentiation
+- **Reusable**: Highest code reuse; nearly identical to Kalah with board size adjustment
+- **Difficulty**: Medium AI (similar to Kalah heuristics)
+- **Regional appeal**: Tamil Nadu, South India; niche audience but culturally rich
+
+### Architecture Reuse Strategy
+
+All Mancala variants can **leverage the same project structure**:
+- `src/domain/rules.ts` — only file that changes significantly per variant
+- `src/domain/board.ts` — minor changes (store positions, pit counts)
+- `src/domain/ai.ts` — retrainable; heuristics scale with rule complexity
+- `src/app/**`, `src/ui/**`, `src/themes/`, `src/wasm/`, `src/workers/` — **fully reusable** across all variants
+
+### Summary
+
+**This repository (Mancala → Kalah)** is the foundation. **Oware and Bao** are the next two games to consider as separate high-impact projects. Each brings new strategic depth while reusing 80%+ of the codebase through CLEAN Architecture isolation.
+
+---
+
 ## Contributing
 
 This is proprietary software. Contributions are accepted by invitation only.

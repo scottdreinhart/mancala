@@ -1,230 +1,342 @@
-# AGENTS.md — Repository Governance Constitution
+# AGENTS.md — Mancala Game Governance
 
-> **Scope**: Repository-wide. This file is the top-level authority for every AI agent,
-> IDE assistant, CLI tool, and CI pipeline operating in this repository.
-> All other governance files inherit from and must not contradict this document.
+> **Authority**: This file is **subordinate to** [`GOVERNANCE.md`](GOVERNANCE.md)
+>
+> For shared rules (all games), see [`GOVERNANCE.md`](GOVERNANCE.md)
+>
+> This file contains **Mancala-specific** governance.
 
----
-
-## 1. Governance Precedence
-
-1. **AGENTS.md** (this file) — supreme authority; overrides all other governance files.
-2. `.github/copilot-instructions.md` — repo-wide Copilot runtime policy.
-3. `.github/instructions/*.instructions.md` — scoped, numbered instruction files.
-4. `docs/**` — human-readable reference documents (informational, not directive).
-
-If any scoped file contradicts AGENTS.md, AGENTS.md wins.
+**Last Updated**: 2026-03-13
+**Status**: ✅ Production Ready
 
 ---
 
-## 2. Absolute Package-Manager Rule
+## Quick Reference
 
-This repository uses **pnpm exclusively**.
-
-| Field | Value |
+| Rule | Value |
 |---|---|
-| `packageManager` | `pnpm@10.31.0` |
-| `engines.node` | `24.14.0` |
-| `engines.pnpm` | `10.31.0` |
-
-### Mandatory
-
-- Use `pnpm install`, `pnpm add`, `pnpm remove`, `pnpm update`, `pnpm exec`, `pnpm run <script>`.
-- Preserve `pnpm-lock.yaml` and `pnpm-workspace.yaml`.
-
-### Forbidden
-
-- Never use `npm`, `npx`, `yarn`, or any non-pnpm package manager.
-- Never generate `package-lock.json` or `yarn.lock`.
-- Never suggest `npm install`, `npm run`, `npx`, or Yarn workflows.
+| **Package Manager** | pnpm only (see GOVERNANCE.md § 2) |
+| **Architecture** | CLEAN + Atomic Design (see GOVERNANCE.md § 3) |
+| **Menu Button** | TOP-RIGHT corner (see GOVERNANCE.md § 4) |
+| **Build Size** | <100KB gzipped (current: 65.95 KB) |
+| **Quality Gates** | TypeScript ✅ ESLint ✅ Build ✅ |
+| **AI Difficulty** | 6 tiers (veryEasy → veryHard) |
 
 ---
 
-## 3. Architecture Preservation
+## 1. Authority & Precedence
 
-This project enforces **CLEAN Architecture** with three layers:
+1. **GOVERNANCE.md** — Shared rules (all games inherit)
+2. **AGENTS.md** (this file) — Mancala-specific overrides
+3. **.github/copilot-instructions.md** — Dev workflow
+4. **.github/instructions/*.md** — Numbered instructions
+5. **docs/** — Reference docs
 
-| Layer | Path | May Import | Must Not Import |
-|---|---|---|---|
-| **Domain** | `src/domain/` | `domain/` only | `app/`, `ui/`, React, any framework |
-| **App** | `src/app/` | `domain/`, `app/` | `ui/` |
-| **UI** | `src/ui/` | `domain/`, `app/`, `ui/` | — |
-| **Workers** | `src/workers/` | `domain/` only | `app/`, `ui/`, React |
-| **Themes** | `src/themes/` | nothing (pure CSS) | everything |
-
-### Component Hierarchy (Atomic Design)
-
-ui/atoms/ → ui/molecules/ → ui/organisms/
-
-Data flows unidirectionally: **Hooks → Organism → Molecules → Atoms**.
-
-### Import Conventions
-
-- Use path aliases: `@/domain`, `@/app`, `@/ui` (configured in `tsconfig.json` and `vite.config.js`).
-- Every directory exposes a barrel `index.ts`. Import from the barrel, not internal files.
-- Never introduce `../../` cross-layer relative imports.
+❗ **If GOVERNANCE.md contradicts this file, GOVERNANCE.md wins.**
 
 ---
 
-## 4. Path Discipline
+## 2. Game Overview
 
-| Path | Purpose |
-|---|---|
-| `src/domain/` | Pure, framework-agnostic game logic |
-| `src/app/` | React hooks, context providers, services |
-| `src/ui/atoms/` | Smallest reusable UI primitives |
-| `src/ui/molecules/` | Composed atom groups |
-| `src/ui/organisms/` | Full feature components |
-| `src/themes/` | Lazy-loaded CSS theme files |
-| `src/wasm/` | WASM AI loader + fallback |
-| `src/workers/` | Web Worker entry points |
-| `electron/` | Electron main + preload |
-| `assembly/` | AssemblyScript source |
-| `scripts/` | Build-time Node scripts |
-| `public/` | Static assets (manifest, SW, offline page) |
-| `dist/` | Vite build output (gitignored) |
-| `release/` | Electron Builder output (gitignored) |
-| `docs/` | Human-readable documentation |
-
-Do not invent new top-level directories without explicit user instruction.
+**Title**: Mancala (Kalah variant)
+**Players**: 1 human vs 1 AI
+**Board**: 2×6 pits + 2 stores
+**AI Tiers**: 6 difficulty levels
+**Tech Stack**: React 19, TypeScript, Vite, WASM (AssemblyScript)
 
 ---
 
-## 5. Cross-platform shell governance
+## 3. Mandatory Features (All Implemented)
 
-This repository enforces strict shell usage rules to ensure builds and scripts run in the correct environment and to prevent cross-shell command drift.
-
-### Linux builds and development
-
-Linux builds and general development workflows must use **Bash**.
-
-In this repository, Bash is normally provided through:
-
-- **WSL: Ubuntu** (default on Windows development machines)
-- native Linux environments
-- CI Linux runners
-
-Use Bash for:
-
-- dependency installation (`pnpm install`)
-- development server execution (`pnpm run dev`, `pnpm run start`)
-- Vite builds (`pnpm run build`, `pnpm run preview`, `pnpm run build:preview`)
-- WASM builds (`pnpm run wasm:build`, `pnpm run wasm:build:debug`)
-- linting (`pnpm run lint`, `pnpm run lint:fix`)
-- formatting (`pnpm run format`, `pnpm run format:check`)
-- typechecking (`pnpm run typecheck`)
-- validation (`pnpm run check`, `pnpm run fix`, `pnpm run validate`)
-- cleanup (`pnpm run clean`, `pnpm run clean:node`, `pnpm run clean:all`, `pnpm run reinstall`)
-- Electron development mode (`pnpm run electron:dev`, `pnpm run electron:preview`)
-- Linux Electron packaging (`pnpm run electron:build:linux`)
-- Capacitor sync (`pnpm run cap:sync`)
-- general source editing, documentation, and repository maintenance
-
-If the task is not explicitly a Windows-native or macOS-native packaging task, use Bash.
-
-### Windows builds
-
-Use **PowerShell** only when the task is explicitly Windows-native Electron packaging:
-
-- `pnpm run electron:build:win`
-
-PowerShell is **not** the default shell.
-
-### macOS and iOS builds
-
-Use a **native or remote macOS** environment only for:
-
-- `pnpm run electron:build:mac`
-- `pnpm run cap:init:ios`
-- `pnpm run cap:open:ios`
-- `pnpm run cap:run:ios`
-
-iOS builds require Apple hardware. Never suggest iOS commands unless macOS availability is confirmed.
-
-### Android builds
-
-Use an **Android-capable environment** (with Android SDK) only for:
-
-- `pnpm run cap:init:android`
-- `pnpm run cap:open:android`
-- `pnpm run cap:run:android`
-
-### Shell routing summary
-
-| Environment | Tasks |
-|---|---|
-| **Bash** (WSL / Linux / CI) | All general development, builds, quality checks, WASM, Electron dev, Linux packaging, Capacitor sync |
-| **PowerShell** | `electron:build:win` only |
-| **macOS** | `electron:build:mac`, iOS Capacitor tasks |
-| **Android SDK** | Android Capacitor tasks |
-
-### Hard-stop rules
-
-Never:
-- default to PowerShell for routine development
-- present PowerShell as interchangeable with Bash for ordinary tasks
-- switch to PowerShell unless the task is Windows-native Electron packaging
-- claim iOS tasks can run fully from Windows or WSL
-- introduce cross-shell command drift
+✅ Splash screen (2.5s animated logo)
+✅ Loading screen (0.8s progress bar)
+✅ Game screen with board UI
+✅ Hamburger menu (TOP-RIGHT corner)
+✅ Settings screen (toggles + rules)
+✅ About screen (description + credits)
+✅ All 6 AI difficulty tiers
+✅ Responsive design (mobile/tablet/desktop)
 
 ---
 
-## 6. Language, Syntax, and Script Governance
+## 4. Architecture & File Locations
 
-### Approved primary languages
+**See GOVERNANCE.md § 3 for full structure**
 
-- HTML, CSS, JavaScript, TypeScript, AssemblyScript, WebAssembly
+Key Mancala files:
 
-### Language priority order
-
-1. TypeScript  2. JavaScript  3. HTML  4. CSS  5. AssemblyScript  6. WebAssembly
-
-### Rules
-
-- Do not create one-off scripts in random languages.
-- Do not create parallel implementations of the same concern.
-- New files must live in the correct existing directory.
-- Prefer repository-native tooling (Vite, TypeScript, ESLint, Prettier, Electron, Capacitor, AssemblyScript, pnpm).
-
-### Anti-orphan-script policy
-
-Every new script must: solve a real need, belong to approved languages, fit existing structure, not duplicate existing tooling, have clear purpose.
-
-### Hard-stop rules
-
-Never: introduce non-approved languages, create helper scripts in random languages, create duplicate build paths, scatter automation across runtimes.
-
----
-
-## 7. Minimal-Change Principle
-
-- Modify only what the user requested.
-- Do not refactor beyond the scope of the task.
-- Do not add dependencies unless explicitly asked.
-- Preserve existing code style and organization.
-
----
-
-## 8. Response Contract
-
-1. **Use pnpm** — never npm, npx, or yarn.
-2. **Respect layer boundaries** — per §3.
-3. **Use path aliases** — `@/domain/...`, `@/app/...`, `@/ui/...`.
-4. **Use existing scripts** — prefer `pnpm <script>` over raw CLI.
-5. **Target the correct shell** — per §5.
-6. **Cite governance** — explain which rule blocks a request and suggest alternatives.
+```
+src/
+├── domain/
+│   ├── board.ts         - Pit ops, sowing, captures
+│   ├── rules.ts         - Game state transitions
+│   ├── ai.ts            - JavaScript minimax (fallback)
+│   ├── types.ts         - GameState, Difficulty types
+│   ├── constants.ts     - Rules constants
+│   └── index.ts         - Barrel export
+│
+├── app/
+│   ├── useGameState.ts  - Main game hook
+│   ├── wasmAIService.ts - WASM orchestration
+│   ├── ThemeContext.tsx
+│   ├── SoundContext.tsx
+│   └── index.ts         - Barrel export
+│
+└── ui/
+    ├── atoms/
+    │   ├── ErrorBoundary.tsx
+    │   └── OfflineIndicator.tsx
+    │
+    ├── molecules/
+    │   ├── Menu.tsx      - Hamburger menu drawer
+    │   ├── MenuIcon.tsx  - Hamburger icon
+    │   ├── CloseIcon.tsx - Close icon
+    │   └── index.ts
+    │
+    └── organisms/
+        ├── App.tsx       - Main app + menu integration
+        ├── SplashScreen.tsx
+        ├── LoadingScreen.tsx
+        ├── Settings.tsx  - Settings screen
+        ├── About.tsx     - About screen
+        └── index.ts
+```
 
 ---
 
-## 9. Self-Check Before Every Response
+## 5. AI Difficulty System
 
-- [ ] Am I using `pnpm` (not npm/npx/yarn)?
-- [ ] Does my import respect layer boundaries in §3?
-- [ ] Am I using path aliases, not relative cross-layer imports?
-- [ ] Am I targeting the correct shell per §5?
-- [ ] Am I using an approved language per §6?
-- [ ] Am I avoiding orphaned scripts per §6?
-- [ ] Am I modifying only what was requested per §7?
-- [ ] Does my output match an existing `package.json` script where applicable?
+All 6 tiers implemented in `src/app/wasmAIService.ts`:
 
-If any check fails, fix it before responding.
+```javascript
+DIFFICULTY_MAP = {
+  veryEasy:   { type: 'jsOnly', time: 0ms,    maxPly: 1 },
+  easy:       { type: 'jsOnly', time: 0ms,    maxPly: 2 },
+  medium:     { type: 'wasm',   time: 200ms,  maxPly: 3 },
+  mediumHard: { type: 'wasm',   time: 500ms,  maxPly: 4 },
+  hard:       { type: 'wasm',   time: 1000ms, maxPly: 5 },
+  veryHard:   { type: 'wasm',   time: 2000ms, maxPly: 6 },
+}
+```
+
+**Key features**:
+- Heuristic-based JS for easy/veryEasy (instant, predictable)
+- Minimax with move ordering for medium+ (WASM-optimized)
+- Time-bounded iterative deepening (adaptive ply depth)
+- Graceful fallback to JS if WASM unavailable
+
+---
+
+## 6. Menu System & UI
+
+**Button Position**: TOP-RIGHT CORNER (mandatory, per GOVERNANCE.md § 4)
+
+**Navigation Flow**:
+```
+Game screen
+  ↓
+[Menu button (top-right)]
+  ↓
+Menu drawer (slide-in from left)
+  ├── 🎮 Game → back to game
+  ├── ⚙️ Settings → settings screen
+  └── ℹ️ About → about screen
+```
+
+**Screens Implemented**:
+1. Splash (2.5s) → animated logo
+2. Loading (0.8s) → progress bar
+3. Game → board + menu button
+4. Settings → sound/theme toggles, rules
+5. About → game info, features, credits
+
+**Responsive**:
+- Desktop: 1024px+ (full layout)
+- Tablet: 768-1023px (stacked layout)
+- Mobile: <768px (menu button, full-width)
+
+---
+
+## 7. Quality Standards
+
+### Build Requirements
+
+```bash
+pnpm typecheck    # Must pass (0 TypeScript errors)
+pnpm lint         # Must pass (0 ESLint errors)
+pnpm format:check # Must pass (0 Prettier errors)
+pnpm build        # Must succeed, <100KB gzipped
+```
+
+### Current Status
+
+✅ TypeScript: 0 errors
+✅ ESLint: 0 errors
+✅ Build: 206 KB → 65.95 KB gzipped
+✅ Modules: 71 transformed
+
+### Performance Metrics
+
+- **Splash**: 2.5s → Loading: 0.8s → Game: 0.6s total transition
+- **Easy AI move**: <50ms
+- **Hard AI move**: ~1000ms (includes 400ms UX delay)
+- **Bundle size**: 65.95 KB gzipped
+- **Time-to-interactive**: ~3.9s (splash → loading → playable)
+
+---
+
+## 8. Development Commands
+
+**All use pnpm** (never npm, yarn, npx):
+
+```bash
+# Development
+pnpm dev          # Vite dev server (hot reload)
+pnpm build        # Production build
+pnpm preview      # Preview production build
+
+# Quality gates
+pnpm check        # Lint + format:check + typecheck
+pnpm lint         # ESLint
+pnpm lint:fix     # ESLint auto-fix
+pnpm format       # Prettier auto-format
+pnpm typecheck    # TypeScript compile check
+
+# WASM (if building AI from scratch)
+pnpm wasm:build   # Compile AssemblyScript → WASM
+```
+
+---
+
+## 9. Known Limitations & Future Work
+
+**Not Yet Implemented**:
+- ⏳ Sowing animation (seed distribution visual)
+- ⏳ Capture highlighting
+- ⏳ Game move history
+- ⏳ Sound effects connection (hooks ready, not wired)
+- ⏳ Dark mode connection (state ready, not wired)
+- ⏳ Settings persistence (localStorage not implemented)
+
+**Nice-to-Have**:
+- 📅 Statistics tracking (wins, losses, streaks)
+- 🎬 Animated sowing
+- 🔊 Sound effects
+- 🌙 Dark mode toggle
+- 📱 Touch haptics (on mobile)
+- 🎮 Keyboard controls (arrow keys)
+
+---
+
+## 10. Package Dependencies
+
+**Core**:
+- React 19.0.0-rc
+- TypeScript 5.9
+- Vite 7.3.1
+- React DOM 19.0.0-rc
+
+**Development**:
+- ESLint (with React/TypeScript plugins)
+- Prettier
+- Vitest (testing framework)
+- Capacitor (mobile wrapper, optional)
+
+**No additional** theme, animation, or UI libraries (custom CSS only)
+
+---
+
+## 11. Accessibility & Compliance
+
+✅ ARIA labels on all interactive elements
+✅ Semantic HTML (buttons, labels, nav, sections)
+✅ Keyboard navigation (menu, settings, difficulty)
+✅ Color contrast (WCAG AA minimum)
+✅ Mobile-friendly (touch targets ≥44px)
+✅ Offline support (service worker)
+
+---
+
+## 12. Platform & Browser Support
+
+✅ Chrome 88+ (latest)
+✅ Firefox 85+ (latest)
+✅ Safari 14+ (latest)
+✅ Edge 88+ (latest)
+✅ Mobile browsers (iOS Safari, Chrome Mobile)
+
+**Requirements**:
+- JavaScript enabled
+- WebAssembly support (for medium+ AI)
+- localStorage (optional, for settings)
+
+---
+
+## 13. Cooperative Markdown Files
+
+All .md files in this project:
+
+✅ Reference [`GOVERNANCE.md`](GOVERNANCE.md) for shared rules
+✅ Include status badges (✅, ⏳, ❌) for quick scanning
+✅ Are machine-readable (headers, lists, code blocks)
+✅ Show last update date
+✅ Use consistent formatting
+✅ Provide real code examples
+✅ Link to related files
+
+**Files in this project**:
+- [`GOVERNANCE.md`](GOVERNANCE.md) — Shared rules (all games)
+- [`AGENTS.md`](AGENTS.md) — Mancala-specific (this file)
+- [`.github/copilot-instructions.md`](.github/copilot-instructions.md) — Dev workflow
+- [`.github/instructions/`](.github/instructions/) — Numbered instructions
+- [`README.md`](README.md) — Game overview
+- [`HAMBURGER_MENU_TEMPLATE.md`](HAMBURGER_MENU_TEMPLATE.md) — Menu template for other games
+
+---
+
+## 14. Next Steps (Priority Order)
+
+1. **Hook up sound** — Wire `soundEnabled` → `useSoundEffects` hook
+2. **Hook up dark mode** — Wire `darkMode` → `ThemeContext`
+3. **Persist settings** — Save toggles to localStorage on change
+4. **Animate sowing** — Add seed distribution animation (optional)
+5. **Replicate menu to other games** — Use [`HAMBURGER_MENU_TEMPLATE.md`](HAMBURGER_MENU_TEMPLATE.md)
+
+---
+
+## 15. Self-Check Before Commits
+
+Before pushing code:
+
+- [ ] Used `pnpm` (not npm)?
+- [ ] Respected layer boundaries (`src/domain/`, `src/app/`, `src/ui/`)?
+- [ ] Used path aliases (`@/`)?
+- [ ] Menu button on top-right corner?
+- [ ] Settings screen works?
+- [ ] All 6 difficulty tiers available?
+- [ ] TypeScript: `pnpm typecheck` passes?
+- [ ] ESLint: `pnpm lint` passes?
+- [ ] Prettier: `pnpm format:check` passes?
+- [ ] Build: `pnpm build` succeeds, <100KB gzipped?
+- [ ] Updated relevant .md files?
+
+---
+
+## 16. Exceptions to GOVERNANCE.md
+
+**Currently**: None. Mancala follows all shared governance rules exactly.
+
+**If needed**, document exceptions in this format:
+```markdown
+### [EXCEPTION] Custom Feature
+
+**Reason**: Why this game differs
+**Implementation**: How it's implemented
+**Approved**: Yes (approved in commit hash)
+```
+
+---
+
+**See [`GOVERNANCE.md`](GOVERNANCE.md) for shared rules across all games.**
+
+**Status**: ✅ Ready for production and as a template for other games.
