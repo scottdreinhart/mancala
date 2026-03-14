@@ -11,25 +11,39 @@
 |---|---|---|
 | `pnpm build` | Vite production build → `dist/` | Bash (WSL: Ubuntu) |
 | `pnpm build:preview` | Build + local preview server | Bash (WSL: Ubuntu) |
-| `pnpm electron:build` | Vite build + electron-builder → `release/` | Platform-dependent |
-| `pnpm electron:build:win` | Windows build → `release/` | **PowerShell** |
+| `pnpm electron:build` | Vite build + electron-builder for current platform → `release/` | Platform-dependent (see below) |
+| `pnpm electron:build:win` | Windows `.exe` (portable) → `release/` | **PowerShell** |
 | `pnpm electron:build:linux` | Linux `.AppImage` → `release/` | Bash (WSL: Ubuntu) |
 | `pnpm electron:build:mac` | macOS `.dmg` → `release/` | **macOS / Apple** |
-| `pnpm cap:sync` | Vite build + Capacitor sync | Bash (WSL: Ubuntu) |
+| `pnpm cap:sync` | Vite build + Capacitor sync to native projects | Bash (WSL: Ubuntu) |
 | `pnpm wasm:build` | AssemblyScript → WASM → base64 | Bash (WSL: Ubuntu) |
 | `pnpm wasm:build:debug` | WASM debug build | Bash (WSL: Ubuntu) |
 
 ---
 
+## Shell / Environment Routing
+
+| Environment | Tasks |
+|---|---|
+| **Bash (WSL: Ubuntu)** | `pnpm install`, `pnpm dev`, `pnpm build`, `pnpm check`, `pnpm fix`, `pnpm validate`, `pnpm electron:build:linux`, `pnpm cap:sync`, `pnpm wasm:build` |
+| **PowerShell** | `pnpm electron:build:win` only |
+| **macOS / Apple** | `pnpm electron:build:mac`, `pnpm cap:open:ios`, `pnpm cap:run:ios` |
+
+**Default**: Bash (WSL: Ubuntu) for everything unless the task explicitly targets Windows packaging or Apple platforms.
+
+---
+
 ## Electron Builder Configuration
+
+Defined in `package.json` under the `"build"` key:
 
 | Field | Value |
 |---|---|
-| `appId` | `com.scottreinhart.mancala` |
-| `productName` | `Mancala` |
+| `appId` | `com.scottreinhart.nim` |
+| `productName` | `Nim` |
 | `directories.output` | `release` |
 | `files` | `dist/**/*`, `electron/**/*` |
-| `win.target` | `portable` |
+| `win.target` | `portable` (unsigned) |
 | `mac.target` | `dmg` |
 | `linux.target` | `AppImage` |
 
@@ -60,6 +74,11 @@
 
 | Script | Effect |
 |---|---|
+| `pnpm lint` | ESLint check on `src/` |
+| `pnpm lint:fix` | ESLint auto-fix on `src/` |
+| `pnpm format` | Prettier format `src/` |
+| `pnpm format:check` | Prettier check `src/` (no write) |
+| `pnpm typecheck` | `tsc --noEmit` |
 | `pnpm check` | `lint` + `format:check` + `typecheck` |
 | `pnpm fix` | `lint:fix` + `format` |
 | `pnpm validate` | `check` + `build` (full pre-push gate) |
@@ -68,23 +87,8 @@ Always run `pnpm validate` before pushing changes.
 
 ---
 
-## WSL / NTFS Platform Switching
-
-Native binaries in `node_modules/` are platform-specific. A `.node-platform.md` tracking file
-in the project root records `platform: linux` or `platform: windows`.
-
-| Step | Bash → Linux | PowerShell → Windows |
-|---|---|---|
-| 1 | `rm -rf node_modules` | Delete `node_modules` |
-| 2 | `pnpm install` (retry if EACCES) | `pnpm install` |
-| 3 | `pnpm rebuild` (creates `.bin/`) | — |
-| 4 | Update `.node-platform.md` → `linux` | Update `.node-platform.md` → `windows` |
-| 5 | `pnpm check` | `pnpm check` |
-
-**Always check `.node-platform.md` before running any command.** See `AGENTS.md` §10.
-
----
-
 ## Language Guardrails
 
-Build scripts use **JavaScript** (Node) in `scripts/`. Do not introduce side-language build helpers.
+Build scripts use **JavaScript** (Node) in `scripts/`. Do not introduce Python, Bash, PowerShell, or other side-language build helpers.
+Prefer existing `package.json` scripts over raw CLI commands.
+Do not create parallel build paths or duplicate tooling.
